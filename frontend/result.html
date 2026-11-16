@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Intelligence Report | Catalyst</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .result-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            padding: 32px;
+            border-radius: 20px;
+            transition: var(--transition-smooth);
+        }
+        .result-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-gold);
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, #1a1a1a 100%);
+            border: 1px solid var(--accent-gold);
+            padding: 60px;
+            border-radius: 32px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .badge-premium {
+            background: var(--accent-gold);
+            color: var(--bg-primary);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 24px;
+            display: inline-block;
+            margin-top: 20px;
+            box-shadow: 0 0 20px var(--accent-gold-glow);
+        }
+        .info-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .info-list li::before {
+            content: '→';
+            color: var(--accent-gold);
+        }
+        .tag-premium {
+            background: var(--accent-gold-glow);
+            color: var(--accent-gold);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="loader-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">
+            <img src="https://img.icons8.com/color/48/m.png" alt="M" style="width: 32px; height: 32px;">
+            <span>Catalyst</span>
+        </div>
+        <div class="nav-links">
+            <a href="home.html">New Analysis</a>
+            <a href="login.html" class="btn-nav-action">Logout</a>
+        </div>
+    </nav>
+
+    <main class="main-experience">
+        <div class="report-header reveal">
+            <span class="hero-tag">Analysis Result</span>
+            <h2>Intelligence Profile Complete</h2>
+            <p id="greetingText">Synthesizing data for your professional trajectory...</p>
+            <div class="badge-premium" id="recommendedField">Computing...</div>
+        </div>
+
+        <div class="form-grid reveal">
+            <div class="result-card">
+                <h3 style="color: var(--accent-gold); margin-bottom: 20px;">🎓 Academic Roadmap</h3>
+                <ul id="degreesList" class="info-list" style="list-style: none;">
+                    <!-- Populated via JS -->
+                </ul>
+            </div>
+
+            <div class="result-card">
+                <h3 style="color: var(--accent-gold); margin-bottom: 20px;">📝 Strategic Gateways</h3>
+                <ul id="examsList" class="info-list" style="list-style: none;">
+                    <!-- Populated via JS -->
+                </ul>
+            </div>
+        </div>
+
+        <div class="result-card reveal" style="margin-top: 40px;">
+            <h3 style="color: var(--accent-gold); margin-bottom: 20px;">💼 High-Impact Roles</h3>
+            <div id="careersList" style="display: flex; flex-wrap: wrap; gap: 12px;">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; margin-top: 60px;" class="reveal">
+            <button class="btn-premium" onclick="window.print()">
+                Export Intelligence Report (PDF)
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </button>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const recommendationData = localStorage.getItem('careerRecommendation');
+            const userData = localStorage.getItem('careerUserData');
+            
+            if (!recommendationData || !userData) {
+                window.location.href = 'home.html';
+                return;
+            }
+
+            const rec = JSON.parse(recommendationData);
+            const user = JSON.parse(userData);
+
+            document.getElementById('greetingText').innerText = `Greetings, ${user.name}. Your academic profile suggests high compatibility with the ${rec.field} ecosystem.`;
+            document.getElementById('recommendedField').innerText = rec.field;
+
+            const degreesList = document.getElementById('degreesList');
+            rec.degrees.forEach(degree => {
+                const li = document.createElement('li');
+                li.innerText = degree;
+                degreesList.appendChild(li);
+            });
+
+            const examsList = document.getElementById('examsList');
+            rec.exams.forEach(exam => {
+                const li = document.createElement('li');
+                li.innerText = exam;
+                examsList.appendChild(li);
+            });
+
+            const careersList = document.getElementById('careersList');
+            rec.careers.forEach(career => {
+                const span = document.createElement('span');
+                span.className = 'tag-premium';
+                span.innerText = career;
+                careersList.appendChild(span);
+            });
+
+            // Entrance Animations
+            window.addEventListener('load', () => {
+                const loader = document.getElementById('loader-overlay');
+                gsap.to(loader, {
+                    opacity: 0,
+                    duration: 0.8,
+                    onComplete: () => {
+                        loader.style.display = 'none';
+                        gsap.to('.reveal', {
+                            opacity: 1,
+                            y: 0,
+                            duration: 1,
+                            stagger: 0.2,
+                            ease: "expo.out"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
